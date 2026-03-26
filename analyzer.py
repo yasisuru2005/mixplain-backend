@@ -9,9 +9,6 @@ import warnings
 from openai import OpenAI
 from dotenv import load_dotenv
 
-tf.config.threading.set_inter_op_parallelism_threads(1)
-tf.config.threading.set_intra_op_parallelism_threads(1)
-
 # Load API Key from .env file
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -44,7 +41,7 @@ class AudioAnalyzer:
                 self.mapping = json.load(f)["genres"]
             print("Analyzer Ready.")
         except Exception as e:
-            print(f"Error loading models: {e}", flush=True)
+            print(f"Error loading models: {e}")
             self.model = None
 
     # MATH LAYER (Feature Extraction)
