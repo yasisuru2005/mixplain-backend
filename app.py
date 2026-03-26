@@ -1,15 +1,22 @@
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TFHUB_CACHE_DIR"] = "/tmp/tfhub"
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os
+
 from werkzeug.utils import secure_filename
 import traceback
 
+from analyzer import AudioAnalyzer
+
 # Analyzer imported
-try:
-    from analyzer import AudioAnalyzer
-except ImportError:
-    print("ERROR: Missing libraries. Run: pip install openai python-dotenv flask-cors librosa tensorflow tensorflow-hub")
-    AudioAnalyzer = None
+# try:
+#     from analyzer import AudioAnalyzer
+# except ImportError:
+#     print("ERROR: Missing libraries. Run: pip install openai python-dotenv flask-cors librosa tensorflow tensorflow-hub")
+#     AudioAnalyzer = None
 
 app = Flask(__name__)
 # Enable CORS for ALL origins to fix Network Error
