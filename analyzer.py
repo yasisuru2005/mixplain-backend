@@ -1,6 +1,9 @@
 import os
 import numpy as np
 import librosa
+
+os.environ["TFHUB_CACHE_DIR"] = "/tmp/tfhub"
+
 import tensorflow as tf
 import tensorflow_hub as hub
 import json
@@ -44,7 +47,7 @@ class AudioAnalyzer:
                 self.mapping = json.load(f)["genres"]
             print("Analyzer Ready.")
         except Exception as e:
-            print(f"Error loading models: {e}")
+            print(f"Error loading models: {e}", flush=True)
             self.model = None
 
     # MATH LAYER (Feature Extraction)
