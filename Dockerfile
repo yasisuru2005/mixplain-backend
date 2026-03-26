@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 10000
 
 # Run the production server with a 2-minute timeout for AI processing
-CMD ["gunicorn", "-b", "0.0.0.0:$PORT", "--timeout", "120", "app:app"] 
+CMD gunicorn -b 0.0.0.0:$PORT --timeout 120 app:app 
