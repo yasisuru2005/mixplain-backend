@@ -3,6 +3,7 @@ import numpy as np
 import librosa
 
 os.environ["TFHUB_CACHE_DIR"] = "/tmp/tfhub"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import tensorflow as tf
 import tensorflow_hub as hub
