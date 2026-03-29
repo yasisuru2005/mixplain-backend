@@ -9,7 +9,6 @@ import warnings
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# Load API Key from .env file
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -44,7 +43,7 @@ class AudioAnalyzer:
             print(f"Error loading models: {e}")
             self.model = None
 
-    # MATH LAYER (Feature Extraction)
+    #Feature Extraction
     def check_stereo_image(self, file_path):
         try:
             duration = librosa.get_duration(filename=file_path)
@@ -73,7 +72,7 @@ class AudioAnalyzer:
             "high":     float(np.sum(S[freqs >= 8000]) / total)
         }
 
-    # --- 2. GPT CONSULTANT LAYER ---
+    # GPT 
     def consult_gpt(self, raw_findings, genre):
         """
         Sends the mathematical proof to GPT and asks for a humane explanation in JSON.
@@ -107,7 +106,7 @@ class AudioAnalyzer:
 
         try:
             response = client.chat.completions.create(
-                model="gpt-4o-mini", # mini for speed (1-2s latency)
+                model="gpt-4o-mini", 
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -127,7 +126,7 @@ class AudioAnalyzer:
         if not self.model: return {"error": "Model not loaded"}
 
         try:
-            # A. AI CLASSIFICATION
+            # CLASSIFICATION
             wav, sr = librosa.load(file_path, sr=TARGET_SR, mono=True)
             _, embeddings, _ = self.yamnet(wav)
             frame_predictions = self.model.predict(embeddings, verbose=0)
@@ -136,7 +135,7 @@ class AudioAnalyzer:
             predicted_genre = self.mapping[predicted_index]
             confidence = round(float(avg_prediction[predicted_index]) * 100, 1)
 
-            # B. FEATURE EXTRACTION
+            # FEATURE EXTRACTION
             y_high, sr_high = librosa.load(file_path, sr=44100)
             user_stats = {
                 "spectrum": self.analyze_spectrum(y_high, sr_high),
@@ -146,7 +145,7 @@ class AudioAnalyzer:
             }
             target = GENRE_TARGETS.get(predicted_genre, GENRE_TARGETS["default"])
 
-            # C. DETECT MATH DEVIATIONS (The "Proof")
+            # DETECT MATH DEVIATIONS 
             raw_findings = {"mix_balance": [], "dynamics": [], "loudness": [], "stereo": []}
             
             # Spectrum Check
@@ -169,11 +168,11 @@ class AudioAnalyzer:
             if user_stats["stereo_width"] < 0.15: 
                 raw_findings["stereo"].append(f"Stereo Width is {user_stats['stereo_width']:.2f} (Near Mono).")
 
-            # D. PASS TO GPT
+            # PASS TO GPT
             print("sending data to GPT...")
             gpt_feedback = self.consult_gpt(raw_findings, predicted_genre)
 
-            # E. RETURN MERGED DATA
+            # RETURN MERGED DATA
             return {
                 "meta": {
                     "genre": str(predicted_genre),
@@ -192,7 +191,7 @@ class AudioAnalyzer:
                     "ideal_spectrum": {k:v for k,v in target.items() if k in user_stats["spectrum"]},
                     "confidence_curve": [float(x) for x in np.max(frame_predictions, axis=1).tolist()][:50]
                 },
-                "issues": gpt_feedback["issues"] # This is now GPT-generated text!
+                "issues": gpt_feedback["issues"] 
             }
 
         except Exception as e:

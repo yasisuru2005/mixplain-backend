@@ -4,7 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 import traceback
 
-# Analyzer imported
+# Analyzer import
 try:
     from analyzer import AudioAnalyzer
 except ImportError:
@@ -20,7 +20,7 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3', 'm4a', 'flac'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Initialize Brain
+# Initialize Analyzer
 analyzer = AudioAnalyzer() if AudioAnalyzer else None
 
 # route test
